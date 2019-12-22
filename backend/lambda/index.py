@@ -9,6 +9,7 @@ PAGE_BASE_URL = "https://esjbooked.umd.edu/Web/index.php?redirect="
 PAGE_NAV_URL = "https://esjbooked.umd.edu/Web/schedule.php?sd="
 
 def handler(event, context):
+    # Setup selenium webdriver
     options = Options()
     options.binary_location = '/opt/headless-chromium'
     options.add_argument('--headless')
@@ -18,19 +19,20 @@ def handler(event, context):
 
     driver = webdriver.Chrome('/opt/chromedriver',chrome_options=options)
 
+    # Navigate to base page with proper date preset
     driver.get(PAGE_NAV_URL + calculateDate())
-    body = f"Headless Chrome Initialized, Page title: {driver.title}"
 
+    # Enter email
     inputElement = driver.find_element_by_id("email")
     inputElement.send_keys(USER_EMAIL)
 
+    # Enter password
     inputElement = driver.find_element_by_id("password")
     inputElement.send_keys(USER_PASSWORD)
 
+    # Click login button
     driver.find_element_by_css_selector('#login-box > div:nth-child(5) > button').click()
 
-    # Navigate to the right week
-    # driver.get(PAGE_NAV_URL)
 
     body = {
         "result": driver.find_element_by_css_selector(".schedule-dates").get_attribute('innerHTML')

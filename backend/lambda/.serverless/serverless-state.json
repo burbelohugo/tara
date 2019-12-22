@@ -120,7 +120,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/tara/dev/1577042964342-2019-12-22T19:29:24.342Z/tara.zip"
+                "S3Key": "serverless/tara/dev/1577043270915-2019-12-22T19:34:30.915Z/tara.zip"
               },
               "FunctionName": "tara-dev-master",
               "Handler": "index.handler",
@@ -143,14 +143,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "MasterLambdaVersion5IBk2tcdZemGqOxXTycQirMvg3tqg97vdfvApItGvI": {
+          "MasterLambdaVersiond2eIFas8o7nhyhtiXbtrvDxAMrLMfb9My1gl8NrUO4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "MasterLambdaFunction"
               },
-              "CodeSha256": "kazs7ZFRMBUmEMz8Wzyrg1WIgDRAQLfzutt8LL04uHs="
+              "CodeSha256": "9JxAENSMN77hEvE3uZ5nJQ8049U0d29AvzJB9wCxCWw="
             }
           }
         },
@@ -163,7 +163,7 @@
           "MasterLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "MasterLambdaVersion5IBk2tcdZemGqOxXTycQirMvg3tqg97vdfvApItGvI"
+              "Ref": "MasterLambdaVersiond2eIFas8o7nhyhtiXbtrvDxAMrLMfb9My1gl8NrUO4"
             }
           }
         }
@@ -219,7 +219,7 @@
     "artifact": "/Users/hugoburbelo/work/tara/backend/lambda/.serverless/tara.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/tara/dev/1577042964342-2019-12-22T19:29:24.342Z",
+    "artifactDirectoryName": "serverless/tara/dev/1577043270915-2019-12-22T19:34:30.915Z",
     "artifact": "tara.zip"
   }
 }

@@ -1,9 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+import datetime
 from env import USER_EMAIL, USER_PASSWORD
+
+
 PAGE_BASE_URL = "https://esjbooked.umd.edu/Web/index.php?redirect="
-PAGE_NAV_URL = "https://esjbooked.umd.edu/Web/schedule.php?sd=2019-12-30"
+PAGE_NAV_URL = "https://esjbooked.umd.edu/Web/schedule.php?sd="
 
 def handler(event, context):
     options = Options()
@@ -15,7 +18,7 @@ def handler(event, context):
 
     driver = webdriver.Chrome('/opt/chromedriver',chrome_options=options)
 
-    driver.get(PAGE_NAV_URL)
+    driver.get(PAGE_NAV_URL + calculateDate())
     body = f"Headless Chrome Initialized, Page title: {driver.title}"
 
     inputElement = driver.find_element_by_id("email")
@@ -43,3 +46,6 @@ def handler(event, context):
 
     return response
 
+def calculateDate():
+    currentDate = datetime.datetime.now()
+    return currentDate.strftime("%Y-%m-%d")

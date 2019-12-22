@@ -7,6 +7,8 @@ from env import USER_EMAIL, USER_PASSWORD
 
 PAGE_BASE_URL = "https://esjbooked.umd.edu/Web/index.php?redirect="
 PAGE_NAV_URL = "https://esjbooked.umd.edu/Web/schedule.php?sd="
+DAYS_IN_ADVANCE = 30
+
 
 def handler(event, context):
     # Setup selenium webdriver
@@ -49,5 +51,6 @@ def handler(event, context):
     return response
 
 def calculateDate():
-    currentDate = datetime.datetime.now()
+    # Add a certain number of days to the current date
+    currentDate = datetime.datetime.now() + datetime.timedelta(days=DAYS_IN_ADVANCE)
     return currentDate.strftime("%Y-%m-%d")

@@ -2,13 +2,15 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 import datetime
+import time
 from env import USER_EMAIL, USER_PASSWORD
 
 
 PAGE_BASE_URL = "https://esjbooked.umd.edu/Web/index.php?redirect="
 PAGE_NAV_URL = "https://esjbooked.umd.edu/Web/schedule.php?sd="
+AVAILABILTY_SEARCH_URL = "https://esjbooked.umd.edu/Web/search-availability.php"
 DAYS_IN_ADVANCE = 30
-
+DEFAULT_MEETING_LENGTH = 60
 
 def handler(event, context):
     # Setup selenium webdriver
@@ -22,7 +24,7 @@ def handler(event, context):
     driver = webdriver.Chrome('/opt/chromedriver',chrome_options=options)
 
     # Navigate to base page with proper date preset
-    driver.get(PAGE_NAV_URL + calculateDate())
+    driver.get(AVAILABILTY_SEARCH_URL)
 
     # Enter email
     inputElement = driver.find_element_by_id("email")
@@ -35,9 +37,36 @@ def handler(event, context):
     # Click login button
     driver.find_element_by_css_selector('#login-box > div:nth-child(5) > button').click()
 
+    # Enter desired time
+    inputElement = driver.find_element_by_id("minutes")
+    inputElement.clear()
+    inputElement.send_keys(DEFAULT_MEETING_LENGTH)
+
+    # Select custom date range
+    driver.find_element_by_css_selector('#searchForm > div:nth-child(5) > div.btn-group.margin-bottom-15 > label:nth-child(4)').click()
+
+    # Enter desired date range
+    inputElement = driver.find_element_by_id("beginDate")
+    inputElement.send_keys(calculateDate(DAYS_IN_ADVANCE))
+
+    inputElement = driver.find_element_by_id("endDate")
+    inputElement.send_keys(calculateDate(DAYS_IN_ADVANCE + 1))
+
+    # Click submit
+    submitButton = driver.find_element_by_css_selector("#searchForm > div:nth-child(8)")
+    action = webdriver.common.action_chains.ActionChains(driver)
+    action.move_to_element_with_offset(submitButton, 100, 0)
+    action.click()
+    action.perform()
+
+    # Wait a few seconds for results to load
+    time.sleep(3)
+
+    results = driver.find_elements_by_class_name("dates")
+    results = results[0:10]
 
     body = {
-        "result": driver.find_element_by_css_selector(".schedule-dates").get_attribute('innerHTML')
+        "result": results
     }
 
     driver.close()
@@ -50,7 +79,7 @@ def handler(event, context):
 
     return response
 
-def calculateDate():
+def calculateDate(offsetDays):
     # Add a certain number of days to the current date
-    currentDate = datetime.datetime.now() + datetime.timedelta(days=DAYS_IN_ADVANCE)
-    return currentDate.strftime("%Y-%m-%d")
+    currentDate = datetime.datetime.now() + datetime.timedelta(days=offsetDays)
+    return currentDate.strftime("%m/%d/%Y")

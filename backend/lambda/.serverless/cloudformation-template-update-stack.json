@@ -16,10 +16,10 @@
         }
       }
     },
-    "HelloLogGroup": {
+    "MasterLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/selenium-lambda-dev-hello"
+        "LogGroupName": "/aws/lambda/tara-dev-master"
       }
     },
     "IamRoleLambdaExecution": {
@@ -48,7 +48,7 @@
                 "-",
                 [
                   "dev",
-                  "selenium-lambda",
+                  "tara",
                   "lambda"
                 ]
               ]
@@ -63,7 +63,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/selenium-lambda-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tara-dev*:*"
                     }
                   ]
                 },
@@ -74,7 +74,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/selenium-lambda-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tara-dev*:*:*"
                     }
                   ]
                 }
@@ -87,7 +87,7 @@
           "Fn::Join": [
             "-",
             [
-              "selenium-lambda",
+              "tara",
               "dev",
               {
                 "Ref": "AWS::Region"
@@ -98,17 +98,17 @@
         }
       }
     },
-    "HelloLambdaFunction": {
+    "MasterLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/selenium-lambda/dev/1577039596485-2019-12-22T18:33:16.485Z/selenium-lambda.zip"
+          "S3Key": "serverless/tara/dev/1577040153458-2019-12-22T18:42:33.458Z/tara.zip"
         },
-        "FunctionName": "selenium-lambda-dev-hello",
-        "Handler": "handler.hello",
+        "FunctionName": "tara-dev-master",
+        "Handler": "index.handler",
         "MemorySize": 1024,
         "Role": {
           "Fn::GetAtt": [
@@ -117,25 +117,25 @@
           ]
         },
         "Runtime": "python3.6",
-        "Timeout": 900,
+        "Timeout": 60,
         "Layers": [
-          "arn:aws:lambda:ap-southeast-2:174358424600:layer:selenium:2",
-          "arn:aws:lambda:ap-southeast-2:174358424600:layer:chromedriver:2"
+          "arn:aws:lambda:us-east-1:174358424600:layer:selenium:1",
+          "arn:aws:lambda:us-east-1:174358424600:layer:chromedriver:1"
         ]
       },
       "DependsOn": [
-        "HelloLogGroup",
+        "MasterLogGroup",
         "IamRoleLambdaExecution"
       ]
     },
-    "HelloLambdaVersion9hzF6e00WpE6h552eWah2OWFRjrIjQm9cEQhjDbvo": {
+    "MasterLambdaVersionYH9Qgl3yM8dMojM2XqHEuyqe7H7EqSudUpd5XO64": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "HelloLambdaFunction"
+          "Ref": "MasterLambdaFunction"
         },
-        "CodeSha256": "+RQh9z05jyzKdHZ7eEn63oo54B0a4HgI0z/HQLgxXts="
+        "CodeSha256": "5y1L0woU2ghraQ6h6XV0jMCApE9y3GSZrznjO++5xWs="
       }
     }
   },
@@ -145,10 +145,10 @@
         "Ref": "ServerlessDeploymentBucket"
       }
     },
-    "HelloLambdaFunctionQualifiedArn": {
+    "MasterLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "HelloLambdaVersion9hzF6e00WpE6h552eWah2OWFRjrIjQm9cEQhjDbvo"
+        "Ref": "MasterLambdaVersionYH9Qgl3yM8dMojM2XqHEuyqe7H7EqSudUpd5XO64"
       }
     }
   }

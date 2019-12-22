@@ -1,7 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-def hello(event, context):
+PAGE_BASE_URL = "https://esjbooked.umd.edu/Web/index.php?redirect="
+
+def handler(event, context):
     options = Options()
     options.binary_location = '/opt/headless-chromium'
     options.add_argument('--headless')
@@ -11,7 +13,7 @@ def hello(event, context):
 
     driver = webdriver.Chrome('/opt/chromedriver',chrome_options=options)
 
-    driver.get('https://www.neaminational.org.au/')
+    driver.get(PAGE_BASE_URL)
     body = f"Headless Chrome Initialized, Page title: {driver.title}"
 
     driver.close();

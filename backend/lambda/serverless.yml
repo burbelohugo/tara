@@ -1,17 +1,14 @@
-
-service: selenium-lambda
-
+service: tara
 
 provider:
   name: aws
   runtime: python3.6
-  region: ap-southeast-2
-  timeout: 900
-
+  region: us-east-1
+  timeout: 60
 
 functions:
-  hello:
-    handler: handler.hello
+  master:
+    handler: index.handler
     layers:
       - ${cf:selenium-layer-dev.SeleniumLayerExport}
       - ${cf:selenium-layer-dev.ChromedriverLayerExport}

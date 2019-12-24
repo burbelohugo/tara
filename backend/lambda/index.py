@@ -11,6 +11,7 @@ PAGE_NAV_URL = "https://esjbooked.umd.edu/Web/schedule.php?sd="
 AVAILABILTY_SEARCH_URL = "https://esjbooked.umd.edu/Web/search-availability.php"
 DAYS_IN_ADVANCE = 30
 DEFAULT_MEETING_LENGTH = 60
+DESIRED_START_TIME = "9:00 AM -"
 
 def handler(event, context):
     # Setup selenium webdriver
@@ -62,11 +63,18 @@ def handler(event, context):
     # Wait a few seconds for results to load
     time.sleep(3)
 
-    results = driver.find_elements_by_class_name("dates")
-    results = results[0:10]
+    availableSlots = driver.find_elements_by_class_name("dates")
+    goodSlots = []
+
+    for slot in availableSlots:
+        if DESIRED_START_TIME in slot.get_attribute('innerHTML'):
+            goodSlots.append(slot.get_attribute('innerHTML'))
+            slot.click()
+            break
+
 
     body = {
-        "result": results
+        "result": driver.title
     }
 
     driver.close()

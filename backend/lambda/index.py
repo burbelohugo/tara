@@ -9,9 +9,11 @@ from env import USER_EMAIL, USER_PASSWORD
 PAGE_BASE_URL = "https://esjbooked.umd.edu/Web/index.php?redirect="
 PAGE_NAV_URL = "https://esjbooked.umd.edu/Web/schedule.php?sd="
 AVAILABILTY_SEARCH_URL = "https://esjbooked.umd.edu/Web/search-availability.php"
-DAYS_IN_ADVANCE = 30
+DAYS_IN_ADVANCE = 10
 DEFAULT_MEETING_LENGTH = 60
 DESIRED_START_TIME = "9:00 AM -"
+DEFAULT_EVENT_TITLE = "CMSC351 Study Group"
+DEFAULT_EVENT_DESCRIPTION = "Study for CMSC351"
 
 def handler(event, context):
     # Setup selenium webdriver
@@ -66,17 +68,27 @@ def handler(event, context):
     availableSlots = driver.find_elements_by_class_name("dates")
     goodSlots = []
 
+    # Click on first ideal slot
     for slot in availableSlots:
         if DESIRED_START_TIME in slot.get_attribute('innerHTML'):
             goodSlots.append(slot.get_attribute('innerHTML'))
             slot.click()
             break
 
+    inputElement = driver.find_element_by_id("reservationTitle")
+    inputElement.send_keys(DEFAULT_EVENT_TITLE)
+
+    inputElement = driver.find_element_by_id("description")
+    inputElement.send_keys(DEFAULT_EVENT_DESCRIPTION)
+
+    # Submit
+    driver.find_element_by_css_selector("#form-reservation > div:nth-child(9) > div > div > button.btn.btn-success.save.create.btnCreate").click()
 
     body = {
-        "result": driver.title
+        "result": calculateDate(DAYS_IN_ADVANCE)
     }
 
+    # Cleanup
     driver.close()
     driver.quit()
 

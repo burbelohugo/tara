@@ -9,6 +9,10 @@ provider:
 functions:
   master:
     handler: index.handler
+    events:
+      - http:
+          path: master
+          method: post
     layers:
       - ${cf:selenium-layer-dev.SeleniumLayerExport}
       - ${cf:selenium-layer-dev.ChromedriverLayerExport}

@@ -3,6 +3,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 import datetime
 import time
+import json
+
 from env import USER_EMAIL, USER_PASSWORD
 
 
@@ -16,6 +18,8 @@ DEFAULT_EVENT_TITLE = "CMSC351 Study Group"
 DEFAULT_EVENT_DESCRIPTION = "Study for CMSC351"
 
 def handler(event, context):
+    print(json.dumps(event))
+
     # Setup selenium webdriver
     options = Options()
     options.binary_location = '/opt/headless-chromium'
@@ -94,7 +98,7 @@ def handler(event, context):
 
     response = {
         "statusCode": 200,
-        "body": body
+        "body": json.dumps({"req": "finished"})
     }
 
     return response

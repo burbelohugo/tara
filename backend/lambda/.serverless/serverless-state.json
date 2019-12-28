@@ -120,7 +120,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/tara/dev/1577147939771-2019-12-24T00:38:59.771Z/tara.zip"
+                "S3Key": "serverless/tara/dev/1577569993858-2019-12-28T21:53:13.858Z/tara.zip"
               },
               "FunctionName": "tara-dev-master",
               "Handler": "index.handler",
@@ -143,14 +143,132 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "MasterLambdaVersionKDRuIb6RsYeqwLHnhbWLpWfMhxcLdxR0cNiLLB7APk": {
+          "MasterLambdaVersionaGFVhpsOX6cm0a47OGZk2usPgqRLNUazUc5NzqnTf8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "MasterLambdaFunction"
               },
-              "CodeSha256": "ElAshAZVJOBPBp7EJ+y5YbQec9CJIwSwhD9PxfqTodk="
+              "CodeSha256": "bOf9LAJnxS1iivMcS8sMcY3/srjPkL0+p9K06WsojbY="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "dev-tara",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              }
+            }
+          },
+          "ApiGatewayResourceMaster": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "master",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodMasterPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceMaster"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "MasterLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1577569992835": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodMasterPost"
+            ]
+          },
+          "MasterLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "MasterLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
             }
           }
         },
@@ -163,7 +281,30 @@
           "MasterLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "MasterLambdaVersionKDRuIb6RsYeqwLHnhbWLpWfMhxcLdxR0cNiLLB7APk"
+              "Ref": "MasterLambdaVersionaGFVhpsOX6cm0a47OGZk2usPgqRLNUazUc5NzqnTf8"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
             }
           }
         }
@@ -201,11 +342,19 @@
     "functions": {
       "master": {
         "handler": "index.handler",
+        "events": [
+          {
+            "http": {
+              "path": "master",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
         "layers": [
           "arn:aws:lambda:us-east-1:174358424600:layer:selenium:1",
           "arn:aws:lambda:us-east-1:174358424600:layer:chromedriver:1"
         ],
-        "events": [],
         "name": "tara-dev-master",
         "package": {},
         "memory": 1024,
@@ -219,7 +368,7 @@
     "artifact": "/Users/hugoburbelo/work/tara/backend/lambda/.serverless/tara.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/tara/dev/1577147939771-2019-12-24T00:38:59.771Z",
+    "artifactDirectoryName": "serverless/tara/dev/1577569993858-2019-12-28T21:53:13.858Z",
     "artifact": "tara.zip"
   }
 }
